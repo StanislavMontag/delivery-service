@@ -39,7 +39,7 @@ git clone https://github.com/ugress/DeliveryService.git
 
 2. Navigate to the project directory:
 
-cd delivery-service-api
+cd DeliveryService
 
 3. Install the project dependencies:
 
@@ -51,4 +51,4 @@ mvn clean package
 
 5. Run the application:
 
-java -jar target/delivery-service-api-0.0.1-SNAPSHOT.jar
+java -jar target/DeliveryService-0.0.1-SNAPSHOT.jar
