@@ -15,7 +15,7 @@ This repository contains the source code for a delivery service API. It provides
 | Method | Endpoint                    | Description                                                  | Request Params          | Example                           |
 |--------|-----------------------------|--------------------------------------------------------------|-------------------------|-----------------------------------|
 | GET    | /delivery/feeRequest        | Calculate the delivery fee for a given city and vehicle type | city, vehicleType, datetime (optional) | /delivery/feeRequest?city=Tallinn&vehicleType=Scooter&datetime=2023-03-26T15:30:00Z |
-| POST   | /delivery/cron              | Set the cron expression for weather importing                | cronExpression          | /delivery/cron?cronExpression=0+0+12+*+*+?            |
+| POST   | /delivery/cron              | Set the cron expression for weather importing                | cronExpression          | /delivery/cron?cronExpression=0 0 * * *            |
 | POST   | /delivery/city/setFee       | Set the base fee for a city                                  | cityName, fee           | /delivery/city/setFee?cityName=Tallinn&fee=5.0        |
 | POST   | /delivery/vehicle/setFee    | Set the base fee for a vehicle type                          | vehicleType, fee        | /delivery/vehicle/setFee?vehicleType=Scooter&fee=2.0  |
 
