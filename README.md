@@ -9,6 +9,7 @@ This repository contains the source code for a delivery service API. It provides
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Running the Application](#running-the-application)
+- [P.S.](#P.S.)
 
 ## API Endpoints
 
@@ -34,7 +35,6 @@ Before you can install and run the application, ensure that you have the followi
 
 1. Clone the repository to your local machine:
 
-```bash
 git clone https://github.com/ugress/DeliveryService.git
 
 2. Navigate to the project directory:
@@ -49,6 +49,11 @@ mvn install
 
 mvn clean package
 
-5. Run the application:
+## Running the Application:
 
 java -jar target/DeliveryService-0.0.1-SNAPSHOT.jar
+
+## P.S.
+
+I always try to stick to the best practices,
+so there's Springdoc OpenAI available on: /swagger-ui/index.html for convenience, but it not well documented yet!
