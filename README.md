@@ -35,7 +35,7 @@ Before you can install and run the application, ensure that you have the followi
 1. Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/delivery-service-api.git
+git clone https://github.com/ugress/DeliveryService.git
 
 2. Navigate to the project directory:
 
