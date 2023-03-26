@@ -1,6 +1,7 @@
 # Delivery Service API
 
 This repository contains the source code for a delivery service API. It provides endpoints for calculating delivery fees based on city, vehicle type, and weather conditions. It also allows setting cron expressions for weather importing and updating fees for cities and vehicles.
+The project also contains integration tests.
 
 ## Table of Contents
 
