@@ -53,8 +53,3 @@ mvn clean package
 ## Running the Application:
 
 java -jar target/DeliveryService-0.0.1-SNAPSHOT.jar
-
-## P.S.
-
-I always try to stick to the best practices,
-so there's Springdoc OpenAI available on: /swagger-ui/index.html for convenience, but it not well documented yet!
