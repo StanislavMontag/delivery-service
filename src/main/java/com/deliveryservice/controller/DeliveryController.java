@@ -1,22 +1,24 @@
 package com.deliveryservice.controller;
 
 import com.deliveryservice.entity.City;
-import com.deliveryservice.entity.Vehicle;
 import com.deliveryservice.exceptions.ResourceNotFoundException;
 import com.deliveryservice.repository.CityRepository;
 import com.deliveryservice.repository.VehicleRepository;
 import com.deliveryservice.service.DeliveryService;
-import com.deliveryservice.service.WeatherImporter;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/delivery")
 public class DeliveryController {
-    private final WeatherImporter weatherImporter;
+    private final com.deliveryservice.service.weatherImporter weatherImporter;
     private final DeliveryService deliveryService;
     private final CityRepository cityRepository;
     private final VehicleRepository vehicleRepository;
@@ -59,12 +61,7 @@ public class DeliveryController {
 
     @PostMapping("/vehicle/setFee")
     public ResponseEntity<?> setVehicleFee(@RequestParam String vehicleType, @RequestParam Double fee) {
-        Vehicle vehicle = vehicleRepository.findByVehicleIgnoreCase(vehicleType)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + vehicleType));
-
-        vehicle.setFee(fee);
-        vehicleRepository.save(vehicle);
-
+        deliveryService.updateVehicleFee(vehicleType, fee);
         return new ResponseEntity<>("Fee updated for vehicle: " + vehicleType, HttpStatus.OK);
     }
 }

@@ -25,12 +25,12 @@ import java.util.concurrent.ScheduledFuture;
 
 @Slf4j
 @Service
-public class WeatherImporter {
+public class weatherImporter {
     private final WeatherDataRepository weatherDataRepository;
     private final TaskScheduler taskScheduler;
     private String cronExpression = "0 15 * * * *";
     private ScheduledFuture<?> scheduledTask;
-    private static final Logger logger = LoggerFactory.getLogger(WeatherImporter.class);
+    private static final Logger logger = LoggerFactory.getLogger(weatherImporter.class);
 
     @PostConstruct
     // Fetching data right after application start
@@ -43,7 +43,7 @@ public class WeatherImporter {
         }
         startImportingWeatherData();
     }
-    public WeatherImporter(WeatherDataRepository weatherDataRepository, TaskScheduler taskScheduler) {
+    public weatherImporter(WeatherDataRepository weatherDataRepository, TaskScheduler taskScheduler) {
         this.weatherDataRepository = weatherDataRepository;
         this.taskScheduler = taskScheduler;
     }
@@ -64,7 +64,7 @@ public class WeatherImporter {
         }
     }
 
-    public void stopImportingWeatherData() {
+    private void stopImportingWeatherData() {
         if (scheduledTask != null) {
             scheduledTask.cancel(true);
             scheduledTask = null;
@@ -80,7 +80,7 @@ public class WeatherImporter {
         startImportingWeatherData();
     }
 
-    public List<WeatherData> requestWeatherData() throws Exception {
+    private List<WeatherData> requestWeatherData() throws Exception {
         List<WeatherData> weatherDataList = new ArrayList<>();
         // Create the HTTP connection and set the request method to GET
         URL url = new URL(API_URL);

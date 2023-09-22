@@ -4,19 +4,19 @@ import com.deliveryservice.entity.City;
 import com.deliveryservice.entity.Vehicle;
 import com.deliveryservice.entity.WeatherData;
 import com.deliveryservice.exceptions.CityNotFoundException;
+import com.deliveryservice.exceptions.ResourceNotFoundException;
 import com.deliveryservice.exceptions.VehicleTypeNotFoundException;
 import com.deliveryservice.exceptions.VehicleUsageForbiddenException;
 import com.deliveryservice.repository.CityRepository;
 import com.deliveryservice.repository.VehicleRepository;
 import com.deliveryservice.repository.WeatherDataRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
 @Service
@@ -94,7 +94,7 @@ public class DeliveryService {
             if (windSpeed >= 10 && windSpeed <= 20) {
                 return 0.5;
             } else if (windSpeed > 20) {
-                throw new RuntimeException("Usage of selected vehicle type is forbidden");
+                throw new VehicleUsageForbiddenException("Usage of selected vehicle type is forbidden");
             }
         }
         return 0.0;
@@ -110,6 +110,12 @@ public class DeliveryService {
             }
         }
         return 0;
+    }
+    public void updateVehicleFee(String vehicleType, Double fee) {
+        Vehicle vehicle = vehicleRepository.findByVehicleIgnoreCase(vehicleType)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + vehicleType));
+        vehicle.setFee(fee);
+        vehicleRepository.save(vehicle);
     }
 
     private boolean isSnowOrSleet(String weatherPhenomenon) {
