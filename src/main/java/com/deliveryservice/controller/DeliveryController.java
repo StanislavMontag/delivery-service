@@ -1,9 +1,9 @@
 package com.deliveryservice.controller;
 
+import com.deliveryservice.dto.DeliveryFeeResponse;
 import com.deliveryservice.entity.City;
 import com.deliveryservice.exceptions.ResourceNotFoundException;
 import com.deliveryservice.repository.CityRepository;
-import com.deliveryservice.repository.VehicleRepository;
 import com.deliveryservice.service.DeliveryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,12 +21,11 @@ public class DeliveryController {
     private final com.deliveryservice.service.weatherImporter weatherImporter;
     private final DeliveryService deliveryService;
     private final CityRepository cityRepository;
-    private final VehicleRepository vehicleRepository;
     @GetMapping("/feeRequest")
 
-    public ResponseEntity<Double> calculateDeliveryFee(@RequestParam String city,
-                                                       @RequestParam String vehicleType,
-                                                       @RequestParam(required = false) String datetime) {
+    public ResponseEntity<DeliveryFeeResponse> calculateDeliveryFee(@RequestParam String city,
+                                                                    @RequestParam String vehicleType,
+                                                                    @RequestParam(required = false) String datetime) {
 
         if ("Tallinn".equalsIgnoreCase(city)) {
             city = "Tallinn-Harku";
@@ -34,7 +33,7 @@ public class DeliveryController {
         if ("Tartu".equalsIgnoreCase(city)) {
             city = "Tartu-Tõravere";
         }
-        double fee = deliveryService.calculateDeliveryFee(city, vehicleType, datetime);
+        DeliveryFeeResponse fee = deliveryService.calculateDeliveryFee(city, vehicleType, datetime);
         return ResponseEntity.ok(fee);
     }
 

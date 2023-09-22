@@ -1,5 +1,6 @@
 package com.deliveryservice.service;
 
+import com.deliveryservice.dto.DeliveryFeeResponse;
 import com.deliveryservice.entity.City;
 import com.deliveryservice.entity.Vehicle;
 import com.deliveryservice.entity.WeatherData;
@@ -10,6 +11,7 @@ import com.deliveryservice.exceptions.VehicleUsageForbiddenException;
 import com.deliveryservice.repository.CityRepository;
 import com.deliveryservice.repository.VehicleRepository;
 import com.deliveryservice.repository.WeatherDataRepository;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -38,7 +40,7 @@ public class DeliveryService {
      * @throws VehicleUsageForbiddenException If the usage of the specified vehicle type is forbidden due to weather conditions.
      */
 
-    public double calculateDeliveryFee(String cityName, String vehicleType, String datetime) {
+    public DeliveryFeeResponse calculateDeliveryFee(String cityName, String vehicleType, String datetime) {
         Optional<WeatherData> latestWeatherDataOpt = findLatestWeatherData(cityName, datetime);
 
         if (latestWeatherDataOpt.isEmpty()) {
@@ -47,12 +49,14 @@ public class DeliveryService {
 
         WeatherData latestWeatherData = latestWeatherDataOpt.get();
 
-        double rbf = calculateRegionalBaseFee(cityName, vehicleType);
-        double atef = calculateAirTemperatureExtraFee(vehicleType, latestWeatherData.getAirTemperature());
-        double wsef = calculateWindSpeedExtraFee(vehicleType, latestWeatherData.getWindSpeed());
-        double wpef = calculateWeatherPhenomenonExtraFee(vehicleType, latestWeatherData.getWeatherPhenomenon());
+        BigDecimal rbf = calculateRegionalBaseFee(cityName, vehicleType);
+        BigDecimal atef = calculateAirTemperatureExtraFee(vehicleType, latestWeatherData.getAirTemperature());
+        BigDecimal wsef = calculateWindSpeedExtraFee(vehicleType, latestWeatherData.getWindSpeed());
+        BigDecimal wpef = calculateWeatherPhenomenonExtraFee(vehicleType, latestWeatherData.getWeatherPhenomenon());
 
-        return rbf + atef + wsef + wpef;
+        BigDecimal totalFee = rbf.add(atef).add(wsef).add(wpef);
+
+        return new DeliveryFeeResponse(totalFee);
     }
 
     private Optional<WeatherData> findLatestWeatherData(String cityName, String datetime) {
@@ -70,47 +74,49 @@ public class DeliveryService {
         }
     }
 
-    private double calculateRegionalBaseFee(String cityName, String vehicleType) {
+    private BigDecimal calculateRegionalBaseFee(String cityName, String vehicleType) {
         City city = cityRepository.findByCityIgnoreCase(cityName)
                 .orElseThrow(() -> new CityNotFoundException("City not found"));
         Vehicle vehicle = vehicleRepository.findByVehicleIgnoreCase(vehicleType)
                 .orElseThrow(() -> new VehicleTypeNotFoundException("No such vehicle type"));
-        return city.getFee() + vehicle.getFee();
+        return BigDecimal.valueOf(city.getFee()).add(BigDecimal.valueOf(vehicle.getFee()));
     }
 
-    private double calculateAirTemperatureExtraFee(String vehicleType, Double airTemperature) {
+    private BigDecimal calculateAirTemperatureExtraFee(String vehicleType, Double airTemperature) {
         if (("Scooter".equalsIgnoreCase(vehicleType) || "Bike".equalsIgnoreCase(vehicleType))) {
             if (airTemperature < -10) {
-                return 1.0;
+                return BigDecimal.valueOf(1.0);
             } else if (airTemperature >= -10 && airTemperature < 0) {
-                return 0.5;
+                return BigDecimal.valueOf(0.5);
             }
         }
-        return 0.0;
+        return BigDecimal.valueOf(0.0);
     }
 
-    private double calculateWindSpeedExtraFee(String vehicleType, Double windSpeed) {
+    private BigDecimal calculateWindSpeedExtraFee(String vehicleType, Double windSpeed) {
         if ("Bike".equalsIgnoreCase(vehicleType)) {
             if (windSpeed >= 10 && windSpeed <= 20) {
-                return 0.5;
+                return BigDecimal.valueOf(0.5);
             } else if (windSpeed > 20) {
                 throw new VehicleUsageForbiddenException("Usage of selected vehicle type is forbidden");
             }
         }
-        return 0.0;
+        return BigDecimal.valueOf(0.0);
     }
-    private double calculateWeatherPhenomenonExtraFee(String vehicleType, String weatherPhenomenon) {
+
+    private BigDecimal calculateWeatherPhenomenonExtraFee(String vehicleType, String weatherPhenomenon) {
         if (vehicleType.equalsIgnoreCase("Scooter") || vehicleType.equalsIgnoreCase("Bike")) {
             if (isSnowOrSleet(weatherPhenomenon)) {
-                return 1;
+                return BigDecimal.valueOf(1);
             } else if (isRain(weatherPhenomenon)) {
-                return 0.5;
+                return BigDecimal.valueOf(0.5);
             } else if (isGlazeHailOrThunder(weatherPhenomenon)) {
                 throw new VehicleUsageForbiddenException("Usage of selected vehicle type is forbidden");
             }
         }
-        return 0;
+        return BigDecimal.valueOf(0);
     }
+
     public void updateVehicleFee(String vehicleType, Double fee) {
         Vehicle vehicle = vehicleRepository.findByVehicleIgnoreCase(vehicleType)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + vehicleType));
